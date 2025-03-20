@@ -1,0 +1,9 @@
+name: UnixSocketTest
+version: '1.0-SNAPSHOT'
+main: org.betterbox.unixSocketTest.UnixSocketTest
+api-version: '1.18'
+load: STARTUP
+authors: [ Grzybol ]
+description: Minecraft Velocity login plugin
+softdepend:
+  - ElasticBuffer

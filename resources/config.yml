@@ -1,0 +1,2 @@
+socketName: "/tmp/plugin_minecraft.sock"
+authToken: "your_default_token_here"
