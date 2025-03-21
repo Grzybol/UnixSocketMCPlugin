@@ -102,6 +102,7 @@ public class UnixSocketTest extends JavaPlugin {
             pluginLogger.log(PluginLogger.LogLevel.WARNING, "Unauthorized attempt to execute command: " + command+" from "+token);
             return;
         }
+        pluginLogger.log(PluginLogger.LogLevel.INFO, "Received command: " + actualCommand);
 
         // Logowanie i wykonanie komendy, jeśli token jest prawidłowy
         getLogger().info("Received command: " + actualCommand);
