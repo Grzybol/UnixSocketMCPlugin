@@ -33,6 +33,7 @@ public class UnixSocketTest extends JavaPlugin {
         pluginLogger = new PluginLogger(folderPath, defaultLogLevels, this);
         loadElasticBuffer();
         new Thread(this::startServer).start();
+        new Thread(this::startStatusServer).start();
         new CommandManager(this, configManager, pluginLogger,this);
     }
 
@@ -71,6 +72,45 @@ public class UnixSocketTest extends JavaPlugin {
             pluginLogger.log(PluginLogger.LogLevel.ERROR, "Error starting server: " + e.getMessage());
         }
     }
+    private void startStatusServer() {
+        try {
+            final File socketFile = new File(configManager.getStatusSocketName()); // np. "/tmp/plugin_status.sock"
+            socketFile.delete();
+            AFUNIXServerSocket statusSocket = AFUNIXServerSocket.newInstance();
+            statusSocket.bind(new AFUNIXSocketAddress(socketFile));
+
+            while (!statusSocket.isClosed()) {
+                Socket sock = statusSocket.accept();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+
+                String line = reader.readLine();
+                if (line != null) {
+                    String[] parts = line.split(":", 3);
+                    if (parts.length == 3 && parts[1].equalsIgnoreCase("isOnline")) {
+                        String token = parts[0];
+                        String playerName = parts[2];
+
+                        if (!token.equals(configManager.getAuthToken())) {
+                            writer.write("unauthorized\n");
+                        } else {
+                            boolean online = Bukkit.getPlayerExact(playerName) != null && Bukkit.getPlayerExact(playerName).isOnline();
+                            writer.write(online ? "true\n" : "false\n");
+                        }
+                        writer.flush();
+                    } else {
+                        writer.write("invalid\n");
+                        writer.flush();
+                    }
+                }
+
+                sock.close();
+            }
+        } catch (IOException e) {
+            pluginLogger.log(PluginLogger.LogLevel.ERROR, "Status server error: " + e.getMessage());
+        }
+    }
+
     private void loadElasticBuffer(){
         try{
             PluginManager pm = Bukkit.getPluginManager();

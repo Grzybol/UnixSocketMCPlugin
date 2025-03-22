@@ -33,6 +33,9 @@ public class ConfigManager {
         if (getConfig().getString("authToken") == null) {
             getConfig().set("authToken", "your_default_token_here");
         }
+        if (getConfig().getString("statusSocketName") == null) {
+            getConfig().set("statusSocketName", "/tmp/plugin_minecraft_status.sock");
+        }
         saveConfig();
     }
 
@@ -62,5 +65,8 @@ public class ConfigManager {
 
     public String getAuthToken() {
         return getConfig().getString("authToken");
+    }
+    public String getStatusSocketName() {
+        return getConfig().getString("statusSocketName");
     }
 }
