@@ -7,3 +7,9 @@ authors: [ Grzybol ]
 description: Minecraft Velocity login plugin
 softdepend:
   - ElasticBuffer
+commands:
+    ust:
+        description: Main command for UnixSocketTest.
+        usage: /ust <reloadconfig|spawnnpc>
+        permission: unixSocketTest.admin
+        permission-message: You do not have permission to use this command.

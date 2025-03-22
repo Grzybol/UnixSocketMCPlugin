@@ -45,6 +45,7 @@ public class ConfigManager {
 
     public void reloadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
+        verifyConfig();
     }
 
     public void saveConfig() {
