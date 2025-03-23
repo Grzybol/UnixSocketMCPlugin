@@ -128,7 +128,36 @@ public class UnixSocketTest extends JavaPlugin {
             pluginLogger.log(PluginLogger.LogLevel.ERROR, "ElasticBufferAPI instance found via ServicesManager, exception: "+e.getMessage());
         }
     }
+    void handleCommand(String command) {
+        pluginLogger.log(PluginLogger.LogLevel.INFO, "Received command: " + command);
+        String[] parts = command.split(":", 2);  // Zakładamy, że komenda jest formatu "token:komenda"
+        if (parts.length < 2) {
+            pluginLogger.log(PluginLogger.LogLevel.ERROR, "Received malformed command: " + command);
+            return;
+        }
 
+        String token = parts[0];
+        String actualCommand = parts[1];
+        pluginLogger.log(PluginLogger.LogLevel.INFO, "Received token: " + token);
+
+        if (!token.equals(configManager.getAuthToken())) {
+            pluginLogger.log(PluginLogger.LogLevel.WARNING, "Unauthorized attempt to execute command: " + command + " from " + token);
+            return;
+        }
+
+        pluginLogger.log(PluginLogger.LogLevel.INFO, "Authorized command: " + actualCommand);
+
+        // Wykonaj komendę z 1 tick opóźnienia w głównym wątku
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+            pluginLogger.log(PluginLogger.LogLevel.INFO, "Executing command: " + actualCommand);
+            boolean result = Bukkit.dispatchCommand(console, actualCommand);
+            pluginLogger.log(PluginLogger.LogLevel.INFO, "Command executed: " + actualCommand + " | Success: " + result);
+        }, 1L);
+    }
+
+
+    /*
     void handleCommand(String command) {
         pluginLogger.log(PluginLogger.LogLevel.INFO, "Received command: " + command);
         String[] parts = command.split(":", 2);  // Zakładamy, że komenda jest formatu "token:komenda"
@@ -162,5 +191,7 @@ public class UnixSocketTest extends JavaPlugin {
 
 
     }
+
+     */
 
 }
