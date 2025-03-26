@@ -19,6 +19,8 @@ public class UnixSocketTest extends JavaPlugin {
     private String folderPath;
     private PluginLogger pluginLogger;
     private ConfigManager configManager;
+    private PlayerEquipmentHandler playerEquipmentHandler;
+    private PlayerDataUtils playerDataUtils;
 
     @Override
     public void onEnable() {
@@ -35,6 +37,18 @@ public class UnixSocketTest extends JavaPlugin {
         new Thread(this::startServer).start();
         new Thread(this::startStatusServer).start();
         new CommandManager(this, configManager, pluginLogger,this);
+        playerDataUtils = new PlayerDataUtils(pluginLogger);
+        pluginLogger.log(PluginLogger.LogLevel.INFO, "UnixSocketTest enabled");
+        playerEquipmentHandler = new PlayerEquipmentHandler(playerDataUtils,pluginLogger);
+        pluginLogger.log(PluginLogger.LogLevel.INFO, "PlayerEquipmentHandler initialized");
+        playerEquipmentHandler.startEquipmentServer(
+                configManager.getBackpackSocketName(),
+                configManager.getArmorSocketName(),
+                configManager.getHotbarSocketName(),
+                configManager.getAuthToken()
+        );
+        pluginLogger.log(PluginLogger.LogLevel.INFO, "PlayerEquipmentHandler started");
+
     }
 
     @Override
@@ -155,43 +169,4 @@ public class UnixSocketTest extends JavaPlugin {
             pluginLogger.log(PluginLogger.LogLevel.INFO, "Command executed: " + actualCommand + " | Success: " + result);
         }, 1L);
     }
-
-
-    /*
-    void handleCommand(String command) {
-        pluginLogger.log(PluginLogger.LogLevel.INFO, "Received command: " + command);
-        String[] parts = command.split(":", 2);  // Zakładamy, że komenda jest formatu "token:komenda"
-        if (parts.length < 2) {
-            pluginLogger.log(PluginLogger.LogLevel.ERROR, "Received malformed command: " + command);
-            return;
-        }
-
-        String token = parts[0];
-        String actualCommand = parts[1];
-        pluginLogger.log(PluginLogger.LogLevel.INFO, "Received token: " + token);
-
-        if (!token.equals(configManager.getAuthToken())) {
-            pluginLogger.log(PluginLogger.LogLevel.WARNING, "Unauthorized attempt to execute command: " + command+" from "+token);
-            return;
-        }
-        pluginLogger.log(PluginLogger.LogLevel.INFO, "Received command: " + actualCommand);
-
-        // Logowanie i wykonanie komendy, jeśli token jest prawidłowy
-        getLogger().info("Received command: " + actualCommand);
-        ConsoleCommandSender console = getServer().getConsoleSender();
-        console.sendMessage("Executing command: " + actualCommand);
-        // Tutaj możesz dodać wykonanie komendy w serwerze Minecraft
-        Bukkit.getScheduler().runTask(this, () -> {
-            console.sendMessage("Executing command: " + actualCommand);
-            boolean result = Bukkit.dispatchCommand(console, actualCommand);
-            pluginLogger.log(PluginLogger.LogLevel.INFO, "Command executed: " + actualCommand + " | Success: " + result);
-        });
-
-        pluginLogger.log(PluginLogger.LogLevel.INFO, "Command executed: " + actualCommand);
-
-
-    }
-
-     */
-
 }

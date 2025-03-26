@@ -36,6 +36,15 @@ public class ConfigManager {
         if (getConfig().getString("statusSocketName") == null) {
             getConfig().set("statusSocketName", "/tmp/plugin_minecraft_status.sock");
         }
+        if (getConfig().getString("backpackSocketName") == null) {
+            getConfig().set("backpackSocketName", "/tmp/plugin_minecraft_backpack.sock");
+        }
+        if (getConfig().getString("armorSocketName") == null) {
+            getConfig().set("armorSocketName", "/tmp/plugin_minecraft_armor.sock");
+        }
+        if (getConfig().getString("hotbarSocketName") == null) {
+            getConfig().set("hotbarSocketName", "/tmp/plugin_minecraft_hotbar.sock");
+        }
         saveConfig();
     }
 
@@ -68,5 +77,14 @@ public class ConfigManager {
     }
     public String getStatusSocketName() {
         return getConfig().getString("statusSocketName");
+    }
+    public String getBackpackSocketName() {
+        return getConfig().getString("backpackSocketName");
+    }
+    public String getArmorSocketName() {
+        return getConfig().getString("armorSocketName");
+    }
+    public String getHotbarSocketName() {
+        return getConfig().getString("hotbarSocketName");
     }
 }
